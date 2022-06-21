@@ -7,13 +7,13 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # creating working directory
-RUN mkdir -p /Backend/
+RUN mkdir -p /home/ubuntu/Backend/
 
 # Set work directory
-WORKDIR /Backend/
+WORKDIR /home/ubuntu/Backend/
 
 # copying all file to docker working directory
-COPY . /Backend/
+COPY . .
 
 # updating linux os
 RUN apt-get update
@@ -22,7 +22,7 @@ RUN apt-get update
 RUN apt-get install -y postgresql libpq-dev postgresql-client postgresql-client-common gcc
 
 # installing pipenv
-RUN pip3 install pipenv
+RUN pip install pipenv
 
 # installing app dependency
 RUN pipenv install --system --deploy --ignore-pipfile

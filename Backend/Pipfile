@@ -11,7 +11,8 @@ whitenoise = "*"
 python-decouple = "*"
 asgiref = "*"
 sqlparse = "*"
-psycopg2 = "*"
+requests = "*"
+psycopg2 = "==2.8.6"
 
 [dev-packages]
 
