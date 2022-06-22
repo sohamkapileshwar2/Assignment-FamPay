@@ -56,17 +56,18 @@ def getYoutubeData(key_list , key_index, token = None):
     
     response = requests.get(URL, PARAMS)
     
-# Valid Response
+    # Valid Response
     if response.status_code == 200:
         youtubeDataFromApi = response.json()
         addYoutubeDataToDatabase(youtubeDataFromApi)
+        print("Youtube Data added to Database..")
         return (True , key_index , youtubeDataFromApi['nextPageToken'])
 
-# Current API_KEY has exhausted its quota
+    # Current API_KEY has exhausted its quota
     elif response.status_code == 403:
         return (True , key_index + 1, token)
     
-# Handle Error
+    # Handle Error
     else:
         return (False , 0 , None)
 
@@ -85,7 +86,6 @@ def YoutubeApiCall():
         Run , index , token = getYoutubeData(key_list, key_index, token)
         key_index = index
 
-        print("Youtube Data added to Database..")
         time.sleep(30)
 
 

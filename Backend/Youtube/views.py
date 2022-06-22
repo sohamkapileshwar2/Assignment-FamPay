@@ -6,12 +6,16 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import *
 from .serializers import *
+
 from .youtubeApiCall import startThread
 
+import sys
 
 
-# Starting the thread when the server starts running
-startThread()
+
+# Starting Youtube API Call thread when server is running
+if 'runserver' in sys.argv:
+    startThread()
 
 
 # Pagination enabled for displaying the video data stored in database
