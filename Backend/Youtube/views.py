@@ -8,24 +8,28 @@ from .models import *
 from .serializers import *
 from .youtubeApiCall import startThread
 
-# Create your views here.
 
 
+# Starting the thread when the server starts running
 startThread()
 
 
+# Pagination enabled for displaying the video data stored in database
 class YoutubeDataPagination(PageNumberPagination):
     page_size = 5
     page_size_query_param = 'page_size'
     max_page_size = 10
 
 
+# Handling GET request at /youtube-api/videos
 class YoutubeData(generics.ListAPIView):
-    queryset = Video.objects.all().order_by('-snippet__publishedAt')
+    queryset = Video.objects.all().order_by('-snippet__publishedAt') # Queryset is already ordered by publishedAt attribute in descending order
     serializer_class = VideoSerializer
     pagination_class = YoutubeDataPagination
 
-
+    
+    # Handling Filtering functionality based on title and description specified in query params
+    # Note - Each word seperated by a space in title or description is checked for a match in the respective fields
     def filter_queryset(self, queryset):
 
         title = self.request.GET.get('title' , None)
@@ -46,8 +50,6 @@ class YoutubeData(generics.ListAPIView):
             queryset = queryset.filter(Q_obj)
 
         
-        # for backend in list(self.filter_backends):
-        #     queryset = backend().filter_queryset(self.request, queryset, self)
         return queryset
 
 

@@ -3,6 +3,8 @@ import time
 import json
 import requests
 
+from decouple import config
+
 from .models import *
 from django.db import transaction
 
@@ -10,7 +12,6 @@ from django.db import transaction
 
 URL = 'https://www.googleapis.com/youtube/v3/search?'
 PARAMS = {
-    'key': 'AIzaSyBt3R3dIeVQCXBmDmdeQ7c2YaTSa0L4zio',
     'part': 'snippet',
     'type': 'video',
     'order': 'date',
@@ -19,6 +20,7 @@ PARAMS = {
 }
 
 
+# Add data to the Database
 def addYoutubeDataToDatabase(data):
     transaction.set_autocommit(False)
     
@@ -42,39 +44,55 @@ def addYoutubeDataToDatabase(data):
 
 
 
-
-def getYoutubeData(token = None):
+# Handling Youtube API GET request 
+def getYoutubeData(key_list , key_index, token = None):
     if token:
         PARAMS['pageToken'] = token
     
+    if key_index < len(key_list):
+        PARAMS['key'] = key_list[key_index]
+    else:
+        return (False , 0 , None)
+    
     response = requests.get(URL, PARAMS)
     
+# Valid Response
     if response.status_code == 200:
         youtubeDataFromApi = response.json()
         addYoutubeDataToDatabase(youtubeDataFromApi)
-        return (True , youtubeDataFromApi['nextPageToken'])
+        return (True , key_index , youtubeDataFromApi['nextPageToken'])
 
+# Current API_KEY has exhausted its quota
+    elif response.status_code == 403:
+        return (True , key_index + 1, token)
+    
+# Handle Error
     else:
-        # handle error
-        return (False , None)
+        return (False , 0 , None)
 
 
 
 
+# Runs a continuous while loop to make GET request to Youtube API at an interval of 30 secs
 def YoutubeApiCall():
     Run = True
     token = None
+    key_index = 0
+    key_list = config('YOUTUBE_DATA_KEY_LIST').split(',')
     while Run:
         print("Getting data from youtube API...") 
-        Run , token = getYoutubeData(token)
+        
+        Run , index , token = getYoutubeData(key_list, key_index, token)
+        key_index = index
+
         print("Youtube Data added to Database..")
         time.sleep(30)
 
 
 
 
-
+# Function to start a new thread for the Youtube API Call
 def startThread():
     t = threading.Thread(target=YoutubeApiCall)
     t.daemon = True
-    t.start() # this will run the `ping` function in a separate thread
+    t.start() 
