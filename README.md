@@ -46,7 +46,8 @@ On completion you will see in the command prompt that the server is up and runni
 ## Working and API Endpoints  
 
 - **Async Calls to YoutubeData API**  
-You can see on the command prompt that every 30 secs an API call is made to YoutubeData API and the response is stored in the database. You would see the following statements being printed in the command prompt. Note that the nextPageToken is used to make the next API Call.  
+You can see on the command prompt that every 30 secs an API call is made to YoutubeData API and the response is stored in the database. You would see the following statements being printed in the command prompt.  
+**Note that the nextPageToken is used to make the next API Call.**    
 
 ```sh
 Getting Data from youtube API...  
@@ -75,6 +76,6 @@ The Search API has been optimised to search for multiple words by seperating the
 ## Files   
 The project contains one app called Youtube. The important files inside it include,  
 - **youtubeApiCall.py**  
-Handles the creation of a thread to start the async process of calling the YoutubeData API in background every 30 secs and adding the data to the database.  
+Handles the creation of a thread to start the async process of calling the YoutubeData API in background every 30 secs and adding the data to the database. **It also handles switching API_KEY in case of quota exhaustion.**     
 - **views.py**  
 Contains a class-based view called YoutubeData which handles the requests on the API endpoint - http://localhost:8000/youtube-api/videos  
